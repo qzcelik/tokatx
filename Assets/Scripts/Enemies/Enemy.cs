@@ -70,7 +70,8 @@ public class Enemy : MonoBehaviour
     {
         shortDistance = 5,
         middleDistance = 10,
-        longDistance = 25
+        longDistance = 25,
+        veryLongDistance = 100
     }
 
     public enum EnemyBehaviour

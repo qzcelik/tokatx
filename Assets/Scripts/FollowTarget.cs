@@ -8,6 +8,6 @@ public class FollowTarget : MonoBehaviour
     private GameObject target;
     private void Update()
     {
-        transform.position = new Vector3(target.transform.position.x - 25, target.transform.position.y + 50, target.transform.position.z);
+        transform.position = new Vector3(target.transform.position.x - 25, target.transform.position.y + 35, target.transform.position.z);
     }
 }

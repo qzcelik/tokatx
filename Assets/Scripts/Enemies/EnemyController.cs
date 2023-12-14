@@ -9,36 +9,55 @@ public class EnemyController : Enemy
     private GameObject enemyBullet;
     public Animator enemyAnimator;
     bool deadControl = true;
+    bool detectedPlayer = false;
+    public PlayerDistaceControl playerDistaceControl;
+    AnimatorStateInfo animatorStateInfo;
     private void Start()
     {
         StartCoroutine(DistanceControl());
+
         EnemyBullet.OnPlayerHealth += PlayerHealthDown;
+        enemyAnimator.SetTrigger("idle");
+
     }
 
     private IEnumerator DistanceControl()
     {
         while (deadControl)
         {
-            if(enemyBehaviour == EnemyBehaviour.died)
+            animatorStateInfo = enemyAnimator.GetCurrentAnimatorStateInfo(0);
+            if (animatorStateInfo.IsName("idle") && animatorStateInfo.normalizedTime >= 1.0f && !detectedPlayer)
+            {
+                enemyAnimator.SetTrigger("idle");
+            }
+
+            float distance = DistancePlayerAndEnemy();
+
+            if (enemyBehaviour == EnemyBehaviour.died)
             {
                 gun.SetActive(false);
                 deadControl = false;
                 break;
             }
 
-            enemyAnimator.SetTrigger("run");
-            yield return new WaitForSeconds(Random.Range(0.1f, 0.4f));
+            yield return new WaitForSeconds(Random.Range(0.1f, 0.2f));
 
-            float distance = DistancePlayerAndEnemy();
 
-            if (distance < (float)PlayerDistaceControl.longDistance)
+            if (distance < (float)playerDistaceControl)
             {
-                AttackToPlayer(enemyBullet);
+                detectedPlayer = true;
             }
-            FollowPlayer();
+
+
+            if (detectedPlayer)
+            {
+                enemyAnimator.SetTrigger("run");
+                AttackToPlayer(enemyBullet);
+                FollowPlayer();
+            }
         }
     }
 
-   
+
 
 }

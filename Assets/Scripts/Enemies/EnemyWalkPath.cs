@@ -10,7 +10,7 @@ public class EnemyWalkPath : Enemy
     List<GameObject> path;
     [SerializeField]
     float pathTime;
-    int count = 0;
+    int count = 1;
     [SerializeField]
     public Animator enemyAnimator;
     bool animCont = true;
@@ -20,6 +20,7 @@ public class EnemyWalkPath : Enemy
     {
         StartCoroutine(EnemyAnimation());
         StartCoroutine(WalkEnemyPointToPoint());
+        enemyAnimator.SetTrigger("walk");
         OnPlayerHealth += PlayerHealthDown;
     }
 
@@ -33,8 +34,12 @@ public class EnemyWalkPath : Enemy
                 animCont = false;
                 break;
             }
-            enemyAnimator.SetTrigger("walk");
-            yield return new WaitForSeconds(pathTime);
+            var animatorStateInfo = enemyAnimator.GetCurrentAnimatorStateInfo(0);
+            if (animatorStateInfo.IsName("walk") && animatorStateInfo.normalizedTime >= 1.0f)
+            {
+                enemyAnimator.SetTrigger("walk");
+            }
+            yield return new WaitForSeconds(0.1f);
         }
     }
 
@@ -44,9 +49,10 @@ public class EnemyWalkPath : Enemy
         {
             float distance = DistancePlayerAndEnemy();
 
-            if (distance < (float)PlayerDistaceControl.middleDistance)
+            if (distance < (float)PlayerDistaceControl.longDistance)
             {
                 StartCoroutine(FollowToPlayer(0.5f));
+                Debug.Log("follow");
                 break;
             }
 
@@ -66,9 +72,9 @@ public class EnemyWalkPath : Enemy
         }
     }
 
-    private IEnumerator FollowToPlayer (float time)
+    private IEnumerator FollowToPlayer(float time)
     {
-        while(animCont)
+        while (animCont)
         {
             enemyAnimator.SetTrigger("punch");
             //AttackToPlayer(GameObject.CreatePrimitive(PrimitiveType.Capsule));
